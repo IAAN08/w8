@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"> 
+    <title>Gardening</title> <!-- 웹 페이지의 제목 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"></script> 
+    <style>
+        html, body {
+            margin: 0; 
+            height: 100%; 
+            position: relative; 
+            
+        }
+        #btn {
+            position: absolute; /* 절대 위치 설정 */
+            width: 120px; height: 50px; 
+            background-color: #ff5234;
+            border: 2px solid #ffffff;  
+            border-radius: 15px; /* 둥근 모서리 */
+            text-align: center; 
+            color: #ffffff; 
+            font-size: 25px; 
+            line-height: 50px; /* 텍스트 수직 중앙 정렬 */
+            cursor: pointer; /* 마우스 커서를 포인터로 변경 */
+            left: 50%; /* 버튼의 왼쪽 위치를 중앙으로 */
+            top: 50%; /* 버튼의 위쪽 위치를 중앙으로 */
+            transform: translate(-50%, -50%); /* 버튼을 중앙 정렬하기 위해 이동 */
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #btn:hover {
+            background-color: #00f36d; /* 버튼에 마우스를 올리면 배경 색상 변경 */
+        }
+        #text {
+            position: absolute; /* 절대 위치 */
+            top: calc(50% - 70px); /* 버튼 위쪽에 위치시키기 위해 조정 */
+            left: 50%; /* 텍스트의 왼쪽 위치를 중앙으로 */
+            transform: translate(-50%, -50%); /* 텍스트를 중앙 정렬하기 위해 이동 */
+            font-size: 30px; 
+            text-align: center; 
+            color: #ffffff; 
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #textbox {
+            position: absolute; /* 절대 위치 설정 */
+            top: 50%; /* 텍스트 박스 위쪽 위치를 중앙으로 */
+            left: 50%; /* 텍스트 박스의 왼쪽 위치를 중앙으로 */
+            transform: translate(-50%, -50%); /* 텍스트 박스를 중앙 정렬하기 위해 이동 */
+            display: none; /* 초기에는 숨김 */
+            padding: 20px; /* 패딩 설정 */
+            border: 2px solid #ffffff; 
+            border-radius: 15px; /* 둥근 모서리 */
+            background-color: #ff5234; /
+            font-size: 20px; 
+            color: #ffffff; 
+            text-align: center; 
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+</head>
+<body>
+    <div id="text">텃밭을 가꿔보아요</div> 
+    <div id="btn" onClick="clickFunc()">START!</div> 
+    <div id="textbox">텃밭이 싱그러워졌네요!</div> 
+    
+    
+    <script>
+        let showCircles = false; // 원 표시 여부 초기값 설정
+        const circles = []; // 원의 위치와 상태를 저장할 배열
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight); // 전체 창 크기만큼 캔버스 생성
+            background(168, 108, 77); 
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight); // 창 크기 조정 시 캔버스 크기 조정
+            background(168, 108, 77); 
+        }
+
+        function draw() {
+            background(168, 108, 77); 
+            
+            // 원을 표시해야 하는 경우
+            if (showCircles) {
+                // 모든 원 그리기
+                for (let circle of circles) {
+                    fill(255); 
+                    if (circle.isHeart) {
+                        drawHeart(circle.x, circle.y); // 새싹 그리기(하트)
+                    } else {
+                        ellipse(circle.x, circle.y, 90, 90); // 원 그리기
+                    }
+                }
+                  // 모든 원이 새싹 상태인지 체크
+                  if (circles.every(circle => circle.isHeart)) {
+                    document.getElementById("textbox").style.display = "block"; // 모든 원이 하트일 때 텍스트 박스 표시
+                }
+            }
+        }
+
+        function drawHeart(x, y) {
+            fill(190, 222, 75); 
+            beginShape(); // 새싹 그리기 시작
+            vertex(x, y + 30); // 새싹의 꼭지점 설정
+            bezierVertex(x - 10, y - 10, x - 30, y + 30, x, y + 30); 
+            bezierVertex(x + 60, y + 30, x + 30, y - 10, x, y + 30); 
+            endShape(CLOSE); // 새싹 그리기 종료
+        }
+
+        function mousePressed() {
+            // 마우스 클릭 시 원 클릭 체크
+            for (let circle of circles) {
+                let d = dist(mouseX, mouseY, circle.x, circle.y); // 클릭한 위치와 원의 거리 계산
+                if (d < 45) { // 원의 반지름보다 작은 경우
+                    circle.isHeart = true; // 새싹 상태로 변경
+                }
+            }
+        }
+
+        function clickFunc() {
+            showCircles = true; // 버튼 클릭 시 원 표시 여부 변경
+            document.getElementById("btn").style.display = "none"; // 버튼을 숨김
+            document.getElementById("text").style.display = "none"; // 텍스트를 숨김
+            cursor('water.png'); // 커서에 이미지 적용
+
+            // 초기 원의 위치와 상태 설정
+            let spacing = 100; // 원 사이의 간격 설정
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 5; j++) {
+                    let x = (width / 2) - (2 * spacing) + (i * spacing); // X 좌표 계산
+                    let y = (height / 2) - (2 * spacing) + (j * spacing); // Y 좌표 계산
+                    circles.push({ x, y, isHeart: false }); // 원의 위치와 새싹 상태 저장
+                }
+            }
+        }
+    </script>
+</body>
+</html>
